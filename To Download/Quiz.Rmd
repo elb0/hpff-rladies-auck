@@ -1,0 +1,109 @@
+---
+title: "Harry Potter Fanfiction Pub Quiz"
+output:
+  html_document: default
+  html_notebook: default
+  pdf_document: default
+---
+
+This pub quiz is run through Google Forms in the background, but you don't have to leave R to get it done!
+You can write your answers, submit them and get them marked, all in this notebook.
+
+And the coolest thing? It uses the `rvest package to do this.
+
+# Setting things up
+I won't go through the mechanics of this in too much detail as we'll look at a few key functions later on. Let me know if there is anything you're curious about.
+
+```{r set-up, error=FALSE, message=FALSE, warning=FALSE}
+# All we need is rvest!
+library(rvest)
+
+
+# Step 1: Set up session and scrape the form
+# TIP if you ever try this at home: I needed to add an e/ before my form ID
+
+
+url = "https://docs.google.com/forms/d/e/1FAIpQLSfvhpZ0LKuUzA0ZRnpIcrzl4JX7eOa111bmsESN54-0mf8Qrw/viewform?usp=sf_link"
+your_session = html_session(url)
+
+your_form = html_form(read_html(url))[[1]]
+
+# Form on home page has no submit button, so we inject a fake submit button 
+# or else rvest cannot submit it.
+# Above comments and below submit code based on:
+# https://stackoverflow.com/questions/33885629/submit-form-with-no-
+# submit-button-in-rvest/38387063
+fake_submit_button = list(name = NULL,
+                           type = "submit",
+                           value = NULL,
+                           checked = NULL,
+                           disabled = NULL,
+                           readonly = NULL,
+                           required = FALSE)
+attr(fake_submit_button, "class") = "input"
+your_form[["fields"]][["submit"]] = fake_submit_button
+
+```
+
+## Your answers
+As the questions appear in the presentation, note the letter of your team's answers below. Please put your answers in quotes. E.g. if you think the answer is A, write "A". Don't write out the answer or forget the quotes.
+```{r your-answers, include=TRUE}
+#####################################################################
+
+# EDIT THIS CHUNK
+
+#####################################################################
+
+# Pick a team name
+team_name = "The best team" # "Awesome Harry Potter Themed Team Name"
+
+# Answer to question 1
+q1 = "A"
+
+# Answer to question 2
+q2 = "B"
+
+# Answer to question 3
+q3 = "A"
+
+# Answer to question 4
+q4 = "C"
+
+# Answer to question 5
+q5 = "C"
+
+
+```
+
+## Submit your answers
+The field entries just come from reading the results of `print(your_form)`. There is surely a better way to do this than copy and pasting, but I was having some trouble.
+
+
+```{r submit-form}
+
+# This just fills the form with your answers from above
+your_answers = set_values(your_form, 
+                          entry.86181236 = team_name,
+                          entry.1888711437 = q1,
+                          entry.725099451 = q2,
+                          entry.1842596964 = q3,
+                          entry.2077876727 = q4,
+                          entry.636809226 = q5
+                          )
+
+
+# This submits the form to Google Forms
+results = submit_form(your_session, your_answers, 'submit')
+
+# This gets the results page and the link to your score and then gets your score
+score_url = read_html(results) %>% 
+  html_node(".quantumWizButtonNestedLink") %>% 
+  html_attr("href")
+
+your_score = read_html(score_url) %>% 
+  html_nodes(".freebirdFormviewerViewHeaderGradeFraction") %>% 
+  html_text()
+
+```
+
+##Congratulations, your score was: `r your_score`.

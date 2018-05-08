@@ -1,0 +1,46 @@
+---
+title: "Quiz Leader Board"
+output:
+  html_notebook: 
+    code_folding: hide
+  html_document: default
+---
+
+
+```{r notes}
+
+# This is a helper file that make the leader board to show at the end of the quiz. It uses the `googlesheets` package to access the responses and scores and present them in order.
+
+# Close any open results from the get-data chunk, click preview, and set to hide all code when displaying for a clean look.
+
+```
+
+```{r set-up, echo=FALSE}
+library(googlesheets)
+library(stringr)
+library(dplyr)
+library(knitr)
+library(lubridate)
+```
+
+```{r get-data}
+data = gs_title("Harry Potter Fanfiction Pub Quiz (Responses)") %>% 
+  gs_read()
+```
+
+```{r leader-board}
+leader_board = data %>% 
+  mutate(score_num = as.numeric(str_split_fixed(Score, " / ", 2)[,1])) %>% 
+  mutate(date = dmy_hms(Timestamp)) %>% 
+  filter(as.Date(date) == today()) %>% # Gets results from today only - delete if all time is okay
+  arrange(desc(score_num)) %>% 
+  mutate(Rank = as.character(min_rank(desc(score_num)))) %>% 
+  select(Rank, `Team Name`, Score)
+
+kable(leader_board)
+
+```
+
+
+
+# Thanks for playing!

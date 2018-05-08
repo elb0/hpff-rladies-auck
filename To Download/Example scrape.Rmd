@@ -1,0 +1,299 @@
+---
+title: "Harry Potter and the Rvest of Fan Fiction"
+author: "Liza Bolton for R Ladies Auckland"
+date: "May 2018"
+output: 
+  ioslides_presentation: 
+    css: slides.css
+    widescreen: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Kia ora! Ko Liza tōku ingoa.
+* PhD student in Statistics, University of Auckland 
+    + Official statistics, social/economic patterns and mortality in New Zealand
+* Data Ambassador <a href=www.dataembassy.co.nz>www.dataembassy.co.nz</a>
+* Sometimes an Introduction to Statistics lecturer
+    + From which the example in this workshop comes from
+* Harry Potter fan
+* Canadian
+* Twitter: <a href="https://twitter.com/Liza_Bolton">@LizaBolton</a>
+
+## What are we doing today?
+* What is web scraping?
+* What do we need to know to do it ethically?
+    + robots.txt
+    + APIs
+* Very simple intro to HTML and CSS
+* Stats 10x Harry Potter fanfiction case study
+* Your turn!
+
+# Webscraping 
+## What is web scraping?
+
+
+## What do we need to know to do it ethically? | So even Hermione Grange would approve
+
+# Stats 10x Harry Potter fanfiction case study
+
+## Why Harry Potter fanfiction?
+* Why not?
+* This great post by Shirley Wu was an early inspiration http://sxywu.com/hpff/
+
+## Taking a look at FanFiction.net
+
+https://www.fanfiction.net/
+
+## Set up
+
+Install the <monowidth>rvest()</monowidth> package as well as two very useful tidyverse packages.
+```{r}
+# install.packages(rvest)
+# install.packages(stringr)
+# install.packages(dplyr)
+
+library(rvest)
+library(stringr)
+library(dplyr)
+
+%>% 
+```
+
+
+
+#All Harry Potter Fanfic
+# Store web url
+i = sample(1:29076, 10)
+urls = paste0("https://www.fanfiction.net/book/Harry-Potter/?&srt=4&r=10&p=", i)
+
+for(j in 1:4){
+test <- read_html(urls[j])
+#Scrape the website for the movie rating
+info[(1:25)+(j-1)*25] = test %>% 
+  html_nodes(".xgray") %>%
+  html_text()
+}
+info
+
+sampledinfo = info[sample(length(info), 100)]
+rating_lang = str_split_fixed(sampledinfo, " - ", n=12)[,c(1,2)]
+genre = str_split_fixed(sampledinfo, " - ", n=12)[,3]
+genre[grep("Chapters", genre)] = NA
+chapter = str_split_fixed(sampledinfo, "Chapters: ", n=2)[,2]
+chapter =  str_split_fixed(chapter, " - ", n=2)[,1]
+words = str_split_fixed(sampledinfo, "Words: ", n=2)[,2]
+words = str_split_fixed(words, " - ", n=2)[,1]
+reviews = str_split_fixed(sampledinfo, "Reviews: ", n=2)[,2]
+reviews = str_split_fixed(reviews, " - ", n=2)[,1]
+favs = str_split_fixed(sampledinfo, "Favs: ", n=2)[,2]
+favs = str_split_fixed(favs, " - ", n=2)[,1]
+follows = str_split_fixed(sampledinfo, "Follows: ", n=2)[,2]
+follows = str_split_fixed(favs, " - ", n=2)[,1]
+final = str_split_fixed(sampledinfo, "Published: ", n=2)[,2]
+final = str_split_fixed(final, " - ", n=3)
+published = final[,1]
+characters = final[,2]
+characters[grep("Complete", characters)] = NA
+complete = final[,3]
+complete[grep("Complete", characters)]="Complete"
+
+cleaned = data.frame(rating_lang, genre, chapter, words, reviews, favs, follows, published, characters, complete)
+View(cleaned)
+write.csv(cleaned, "generalsample.csv")
+
+#Dramione
+# Store web url
+i = sample(1:156, 10)
+urls = paste0("https://www.fanfiction.net/book/Harry-Potter/?&srt=1&r=10&c1=3&c2=6&pm=1&p=", i)
+
+for(j in 1:4){
+  test <- read_html(urls[j])
+  #Scrape the website for the movie rating
+  info[(1:25)+(j-1)*25] = test %>% 
+    html_nodes(".xgray") %>%
+    html_text()
+}
+info
+
+sampledinfo = info[sample(length(info), 100)]
+rating_lang = str_split_fixed(sampledinfo, " - ", n=12)[,c(1,2)]
+genre = str_split_fixed(sampledinfo, " - ", n=12)[,3]
+genre[grep("Chapters", genre)] = NA
+chapter = str_split_fixed(sampledinfo, "Chapters: ", n=2)[,2]
+chapter =  str_split_fixed(chapter, " - ", n=2)[,1]
+words = str_split_fixed(sampledinfo, "Words: ", n=2)[,2]
+words = str_split_fixed(words, " - ", n=2)[,1]
+reviews = str_split_fixed(sampledinfo, "Reviews: ", n=2)[,2]
+reviews = str_split_fixed(reviews, " - ", n=2)[,1]
+favs = str_split_fixed(sampledinfo, "Favs: ", n=2)[,2]
+favs = str_split_fixed(favs, " - ", n=2)[,1]
+follows = str_split_fixed(sampledinfo, "Follows: ", n=2)[,2]
+follows = str_split_fixed(favs, " - ", n=2)[,1]
+final = str_split_fixed(sampledinfo, "Published: ", n=2)[,2]
+final = str_split_fixed(final, " - ", n=3)
+published = final[,1]
+characters = final[,2]
+characters[grep("Complete", characters)] = NA
+complete = final[,3]
+complete[grep("Complete", characters)]="Complete"
+
+cleaned = data.frame(rating_lang, genre, chapter, words, reviews, favs, follows, published, characters, complete)
+View(cleaned)
+write.csv(cleaned, "dramione.csv")
+
+#Drarry
+# Store web url
+i = sample(1:151, 10)
+urls = paste0("https://www.fanfiction.net/book/Harry-Potter/?&srt=1&r=10&c1=1&c2=6&pm=1&p=", i)
+
+for(j in 1:4){
+  test <- read_html(urls[j])
+  #Scrape the website for the movie rating
+  info[(1:25)+(j-1)*25] = test %>% 
+    html_nodes(".xgray") %>%
+    html_text()
+}
+info
+
+sampledinfo = info[sample(length(info), 100)]
+rating_lang = str_split_fixed(sampledinfo, " - ", n=12)[,c(1,2)]
+genre = str_split_fixed(sampledinfo, " - ", n=12)[,3]
+genre[grep("Chapters", genre)] = NA
+chapter = str_split_fixed(sampledinfo, "Chapters: ", n=2)[,2]
+chapter =  str_split_fixed(chapter, " - ", n=2)[,1]
+words = str_split_fixed(sampledinfo, "Words: ", n=2)[,2]
+words = str_split_fixed(words, " - ", n=2)[,1]
+reviews = str_split_fixed(sampledinfo, "Reviews: ", n=2)[,2]
+reviews = str_split_fixed(reviews, " - ", n=2)[,1]
+favs = str_split_fixed(sampledinfo, "Favs: ", n=2)[,2]
+favs = str_split_fixed(favs, " - ", n=2)[,1]
+follows = str_split_fixed(sampledinfo, "Follows: ", n=2)[,2]
+follows = str_split_fixed(favs, " - ", n=2)[,1]
+final = str_split_fixed(sampledinfo, "Published: ", n=2)[,2]
+final = str_split_fixed(final, " - ", n=3)
+published = final[,1]
+characters = final[,2]
+characters[grep("Complete", characters)] = NA
+complete = final[,3]
+complete[grep("Complete", characters)]="Complete"
+
+cleaned = data.frame(rating_lang, genre, chapter, words, reviews, favs, follows, published, characters, complete)
+View(cleaned)
+write.csv(cleaned, "drarry.csv")
+
+#Hinny
+# Store web url
+i = sample(1:62, 10)
+urls = paste0("https://www.fanfiction.net/book/Harry-Potter/?&srt=1&r=10&c1=1&c2=11&pm=1&p=", i)
+
+for(j in 1:4){
+  test <- read_html(urls[j])
+  #Scrape the website for the movie rating
+  info[(1:25)+(j-1)*25] = test %>% 
+    html_nodes(".xgray") %>%
+    html_text()
+}
+info
+
+sampledinfo = info[sample(length(info), 100)]
+rating_lang = str_split_fixed(sampledinfo, " - ", n=12)[,c(1,2)]
+genre = str_split_fixed(sampledinfo, " - ", n=12)[,3]
+genre[grep("Chapters", genre)] = NA
+chapter = str_split_fixed(sampledinfo, "Chapters: ", n=2)[,2]
+chapter =  str_split_fixed(chapter, " - ", n=2)[,1]
+words = str_split_fixed(sampledinfo, "Words: ", n=2)[,2]
+words = str_split_fixed(words, " - ", n=2)[,1]
+reviews = str_split_fixed(sampledinfo, "Reviews: ", n=2)[,2]
+reviews = str_split_fixed(reviews, " - ", n=2)[,1]
+favs = str_split_fixed(sampledinfo, "Favs: ", n=2)[,2]
+favs = str_split_fixed(favs, " - ", n=2)[,1]
+follows = str_split_fixed(sampledinfo, "Follows: ", n=2)[,2]
+follows = str_split_fixed(favs, " - ", n=2)[,1]
+final = str_split_fixed(sampledinfo, "Published: ", n=2)[,2]
+final = str_split_fixed(final, " - ", n=3)
+published = final[,1]
+characters = final[,2]
+characters[grep("Complete", characters)] = NA
+complete = final[,3]
+complete[grep("Complete", characters)]="Complete"
+
+cleaned = data.frame(rating_lang, genre, chapter, words, reviews, favs, follows, published, characters, complete)
+View(cleaned)
+write.csv(cleaned, "Hinny.csv")
+
+#hermioneron
+# Store web url
+i = sample(1:62, 10)
+urls = paste0("https://www.fanfiction.net/book/Harry-Potter/?&srt=1&r=10&c1=3&c2=2&pm=1&p=", i)
+
+info=NULL
+for(j in 1:4){
+  test <- read_html(urls[j])
+  #Scrape the website for the movie rating
+  info[(1:25)+(j-1)*25] = test %>% 
+    html_nodes(".xgray") %>%
+    html_text()
+}
+info
+
+sampledinfo = info[sample(length(info), 100)]
+rating_lang = str_split_fixed(sampledinfo, " - ", n=12)[,c(1,2)]
+genre = str_split_fixed(sampledinfo, " - ", n=12)[,3]
+genre[grep("Chapters", genre)] = NA
+chapter = str_split_fixed(sampledinfo, "Chapters: ", n=2)[,2]
+chapter =  str_split_fixed(chapter, " - ", n=2)[,1]
+words = str_split_fixed(sampledinfo, "Words: ", n=2)[,2]
+words = str_split_fixed(words, " - ", n=2)[,1]
+reviews = str_split_fixed(sampledinfo, "Reviews: ", n=2)[,2]
+reviews = str_split_fixed(reviews, " - ", n=2)[,1]
+favs = str_split_fixed(sampledinfo, "Favs: ", n=2)[,2]
+favs = str_split_fixed(favs, " - ", n=2)[,1]
+follows = str_split_fixed(sampledinfo, "Follows: ", n=2)[,2]
+follows = str_split_fixed(favs, " - ", n=2)[,1]
+final = str_split_fixed(sampledinfo, "Published: ", n=2)[,2]
+final = str_split_fixed(final, " - ", n=3)
+published = final[,1]
+characters = final[,2]
+characters[grep("Complete", characters)] = NA
+complete = final[,3]
+complete[grep("Complete", characters)]="Complete"
+
+cleaned = data.frame(rating_lang, genre, chapter, words, reviews, favs, follows, published, characters, complete)
+View(cleaned)
+write.csv(cleaned, "hermioneron.csv")
+
+
+
+dramione = read.csv("dramione.csv")
+drarry = read.csv("drarry.csv")
+hinny = read.csv("hinny.csv")
+romione = read.csv("hermioneron.csv")
+
+dramione$ship = "dramione"
+dramione$shipnum = 1
+drarry$ship = "drarry"
+drarry$shipnum = 2
+hinny$ship = "hinny"
+hinny$shipnum = 3
+romione$ship = "romione"
+romione$shipnum = 4
+
+all = data.frame(rbind(dramione, drarry, hinny, romione))
+all$favs = as.numeric(all$favs)
+
+write.csv(all, "all.csv")
+
+mod = lm(all$fav ~ all$ship, data=all)
+summary(mod)
+confint(mod)
+
+
+
+```
+
+
+
+## Your turn
