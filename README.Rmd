@@ -3,7 +3,7 @@ title: "Running a pub quiz from R"
 author: "Liza Bolton"
 output: html_document
 ---
-
+# Running a pub quiz from R
 ### Some background
 This was set up for a [R-Ladies Auckland meetup](https://www.meetup.com/rladies-auckland/events/250117268/).
 
