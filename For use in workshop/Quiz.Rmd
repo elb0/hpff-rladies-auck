@@ -9,7 +9,7 @@ output:
 This pub quiz is run through Google Forms in the background, but you don't have to leave R to get it done!
 You can write your answers, submit them and get them marked, all in this notebook.
 
-And the coolest thing? It uses the `rvest package to do this.
+And the coolest thing? It uses the `rvest` package to do this.
 
 # Setting things up
 I won't go through the mechanics of this in too much detail as we'll look at a few key functions later on. Let me know if there is anything you're curious about.
