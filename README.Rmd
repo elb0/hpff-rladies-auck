@@ -7,11 +7,11 @@ output: html_document
 ### Some background
 This was set up for a [R-Ladies Auckland meetup](https://www.meetup.com/rladies-auckland/events/250117268/).
 
-This talk was about web scraping and was inspired from work I had done to get data to write a Stats 101: Introduction to Statistics exam in 2017. In this spirit of R flavoured fun we have at these meetups, I thought it would be neat to showcase some of the powers of the `rvest` package in a warm up quiz. I doubt this will catch on for your local pub quiz, but maybe this will be of use to you in your own R-Ladies or other R themed groups. 
+This talk was about web scraping and was inspired by work I had done to get data to write a Stats 101: Introduction to Statistics exam in 2017. In the spirit of R flavoured fun we have at these meetups, I thought it would be neat to showcase some of the powers of the `rvest` package in a warm up quiz. I doubt this will catch on for your local pub quiz, but maybe this will be of use to you in your own R-Ladies or other R themed groups. 
 
-More information on this talk in the [notes for the talk](www.dataembassy.co.nz/links).
+More information on this talk in the [notes for the talk](http://www.dataembassy.co.nz/links).
 
-Hit me up on [Twitter](www.twitter.com/Liza_Bolton) if you have any questions or feedback.
+Hit me up on [Twitter](https://www.twitter.com/Liza_Bolton) if you have any questions or feedback.
 
 # Ingredients
 * Some questions you want to ask in a presentation (can be any format - not linked to anything else)

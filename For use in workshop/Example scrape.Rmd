@@ -1,11 +1,7 @@
 ---
 title: "Harry Potter and the Rvest of Fan Fiction"
 author: "Liza Bolton for R Ladies Auckland"
-date: "May 2018"
-output: 
-  ioslides_presentation: 
-    css: slides.css
-    widescreen: yes
+date: "May 22, 2018"
 ---
 
 ```{r setup, include=FALSE}
