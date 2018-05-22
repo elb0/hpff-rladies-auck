@@ -2,294 +2,278 @@
 title: "Harry Potter and the Rvest of Fan Fiction"
 author: "Liza Bolton for R Ladies Auckland"
 date: "May 22, 2018"
+output:
+  html_document: default
+  html_notebook: default
+  pdf_document: default
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-```
-
-## Kia ora! Ko Liza tōku ingoa.
-* PhD student in Statistics, University of Auckland 
-    + Official statistics, social/economic patterns and mortality in New Zealand
-* Data Ambassador <a href=www.dataembassy.co.nz>www.dataembassy.co.nz</a>
-* Sometimes an Introduction to Statistics lecturer
-    + From which the example in this workshop comes from
-* Harry Potter fan
-* Canadian
-* Twitter: <a href="https://twitter.com/Liza_Bolton">@LizaBolton</a>
-
-## What are we doing today?
-* What is web scraping?
-* What do we need to know to do it ethically?
-    + robots.txt
-    + APIs
-* Very simple intro to HTML and CSS
-* Stats 10x Harry Potter fanfiction case study
-* Your turn!
-
-# Webscraping 
-## What is web scraping?
-
-
-## What do we need to know to do it ethically? | So even Hermione Grange would approve
-
-# Stats 10x Harry Potter fanfiction case study
-
-## Why Harry Potter fanfiction?
-* Why not?
-* This great post by Shirley Wu was an early inspiration http://sxywu.com/hpff/
-
-## Taking a look at FanFiction.net
-
-https://www.fanfiction.net/
-
 ## Set up
+We're going to need a package called `rvest` (rvest, harvest, geddit?) to do our web scraping, `robotstxt` helps with some of our ethics checking, and `stringr`and `dplyr` will help with our data cleaning.
 
-Install the <monowidth>rvest()</monowidth> package as well as two very useful tidyverse packages.
-```{r}
-# install.packages(rvest)
-# install.packages(stringr)
-# install.packages(dplyr)
+```{r set-up, message=FALSE, warning=FALSE}
 
+# install.packages("dplyr")
+# install.packages("ggplot2")
+# install.packages("lubridate")
+# install.packages("purr")
+# install.packages("readr")
+# install.packages("robotstxt")
+# install.packages("rvest")
+# install.packages("stringr")
+# install.packages("tidyr")
+
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(purrr)
+library(readr)
+library(robotstxt)
 library(rvest)
 library(stringr)
-library(dplyr)
+library(tidyr)
 
-%>% 
 ```
 
+In your browser, you can got to [https://www.fanfiction.net/robots.txt](www.fanfiction.net/robots.txt), or check what it says directly from your R session!
+```{r ethics, warning=FALSE}
 
+rt = robotstxt("fanfiction.net")
 
-#All Harry Potter Fanfic
-# Store web url
-i = sample(1:29076, 10)
-urls = paste0("https://www.fanfiction.net/book/Harry-Potter/?&srt=4&r=10&p=", i)
+# Check which areas are off limits
+rt$permissions
 
-for(j in 1:4){
-test <- read_html(urls[j])
-#Scrape the website for the movie rating
-info[(1:25)+(j-1)*25] = test %>% 
-  html_nodes(".xgray") %>%
-  html_text()
-}
-info
-
-sampledinfo = info[sample(length(info), 100)]
-rating_lang = str_split_fixed(sampledinfo, " - ", n=12)[,c(1,2)]
-genre = str_split_fixed(sampledinfo, " - ", n=12)[,3]
-genre[grep("Chapters", genre)] = NA
-chapter = str_split_fixed(sampledinfo, "Chapters: ", n=2)[,2]
-chapter =  str_split_fixed(chapter, " - ", n=2)[,1]
-words = str_split_fixed(sampledinfo, "Words: ", n=2)[,2]
-words = str_split_fixed(words, " - ", n=2)[,1]
-reviews = str_split_fixed(sampledinfo, "Reviews: ", n=2)[,2]
-reviews = str_split_fixed(reviews, " - ", n=2)[,1]
-favs = str_split_fixed(sampledinfo, "Favs: ", n=2)[,2]
-favs = str_split_fixed(favs, " - ", n=2)[,1]
-follows = str_split_fixed(sampledinfo, "Follows: ", n=2)[,2]
-follows = str_split_fixed(favs, " - ", n=2)[,1]
-final = str_split_fixed(sampledinfo, "Published: ", n=2)[,2]
-final = str_split_fixed(final, " - ", n=3)
-published = final[,1]
-characters = final[,2]
-characters[grep("Complete", characters)] = NA
-complete = final[,3]
-complete[grep("Complete", characters)]="Complete"
-
-cleaned = data.frame(rating_lang, genre, chapter, words, reviews, favs, follows, published, characters, complete)
-View(cleaned)
-write.csv(cleaned, "generalsample.csv")
-
-#Dramione
-# Store web url
-i = sample(1:156, 10)
-urls = paste0("https://www.fanfiction.net/book/Harry-Potter/?&srt=1&r=10&c1=3&c2=6&pm=1&p=", i)
-
-for(j in 1:4){
-  test <- read_html(urls[j])
-  #Scrape the website for the movie rating
-  info[(1:25)+(j-1)*25] = test %>% 
-    html_nodes(".xgray") %>%
-    html_text()
-}
-info
-
-sampledinfo = info[sample(length(info), 100)]
-rating_lang = str_split_fixed(sampledinfo, " - ", n=12)[,c(1,2)]
-genre = str_split_fixed(sampledinfo, " - ", n=12)[,3]
-genre[grep("Chapters", genre)] = NA
-chapter = str_split_fixed(sampledinfo, "Chapters: ", n=2)[,2]
-chapter =  str_split_fixed(chapter, " - ", n=2)[,1]
-words = str_split_fixed(sampledinfo, "Words: ", n=2)[,2]
-words = str_split_fixed(words, " - ", n=2)[,1]
-reviews = str_split_fixed(sampledinfo, "Reviews: ", n=2)[,2]
-reviews = str_split_fixed(reviews, " - ", n=2)[,1]
-favs = str_split_fixed(sampledinfo, "Favs: ", n=2)[,2]
-favs = str_split_fixed(favs, " - ", n=2)[,1]
-follows = str_split_fixed(sampledinfo, "Follows: ", n=2)[,2]
-follows = str_split_fixed(favs, " - ", n=2)[,1]
-final = str_split_fixed(sampledinfo, "Published: ", n=2)[,2]
-final = str_split_fixed(final, " - ", n=3)
-published = final[,1]
-characters = final[,2]
-characters[grep("Complete", characters)] = NA
-complete = final[,3]
-complete[grep("Complete", characters)]="Complete"
-
-cleaned = data.frame(rating_lang, genre, chapter, words, reviews, favs, follows, published, characters, complete)
-View(cleaned)
-write.csv(cleaned, "dramione.csv")
-
-#Drarry
-# Store web url
-i = sample(1:151, 10)
-urls = paste0("https://www.fanfiction.net/book/Harry-Potter/?&srt=1&r=10&c1=1&c2=6&pm=1&p=", i)
-
-for(j in 1:4){
-  test <- read_html(urls[j])
-  #Scrape the website for the movie rating
-  info[(1:25)+(j-1)*25] = test %>% 
-    html_nodes(".xgray") %>%
-    html_text()
-}
-info
-
-sampledinfo = info[sample(length(info), 100)]
-rating_lang = str_split_fixed(sampledinfo, " - ", n=12)[,c(1,2)]
-genre = str_split_fixed(sampledinfo, " - ", n=12)[,3]
-genre[grep("Chapters", genre)] = NA
-chapter = str_split_fixed(sampledinfo, "Chapters: ", n=2)[,2]
-chapter =  str_split_fixed(chapter, " - ", n=2)[,1]
-words = str_split_fixed(sampledinfo, "Words: ", n=2)[,2]
-words = str_split_fixed(words, " - ", n=2)[,1]
-reviews = str_split_fixed(sampledinfo, "Reviews: ", n=2)[,2]
-reviews = str_split_fixed(reviews, " - ", n=2)[,1]
-favs = str_split_fixed(sampledinfo, "Favs: ", n=2)[,2]
-favs = str_split_fixed(favs, " - ", n=2)[,1]
-follows = str_split_fixed(sampledinfo, "Follows: ", n=2)[,2]
-follows = str_split_fixed(favs, " - ", n=2)[,1]
-final = str_split_fixed(sampledinfo, "Published: ", n=2)[,2]
-final = str_split_fixed(final, " - ", n=3)
-published = final[,1]
-characters = final[,2]
-characters[grep("Complete", characters)] = NA
-complete = final[,3]
-complete[grep("Complete", characters)]="Complete"
-
-cleaned = data.frame(rating_lang, genre, chapter, words, reviews, favs, follows, published, characters, complete)
-View(cleaned)
-write.csv(cleaned, "drarry.csv")
-
-#Hinny
-# Store web url
-i = sample(1:62, 10)
-urls = paste0("https://www.fanfiction.net/book/Harry-Potter/?&srt=1&r=10&c1=1&c2=11&pm=1&p=", i)
-
-for(j in 1:4){
-  test <- read_html(urls[j])
-  #Scrape the website for the movie rating
-  info[(1:25)+(j-1)*25] = test %>% 
-    html_nodes(".xgray") %>%
-    html_text()
-}
-info
-
-sampledinfo = info[sample(length(info), 100)]
-rating_lang = str_split_fixed(sampledinfo, " - ", n=12)[,c(1,2)]
-genre = str_split_fixed(sampledinfo, " - ", n=12)[,3]
-genre[grep("Chapters", genre)] = NA
-chapter = str_split_fixed(sampledinfo, "Chapters: ", n=2)[,2]
-chapter =  str_split_fixed(chapter, " - ", n=2)[,1]
-words = str_split_fixed(sampledinfo, "Words: ", n=2)[,2]
-words = str_split_fixed(words, " - ", n=2)[,1]
-reviews = str_split_fixed(sampledinfo, "Reviews: ", n=2)[,2]
-reviews = str_split_fixed(reviews, " - ", n=2)[,1]
-favs = str_split_fixed(sampledinfo, "Favs: ", n=2)[,2]
-favs = str_split_fixed(favs, " - ", n=2)[,1]
-follows = str_split_fixed(sampledinfo, "Follows: ", n=2)[,2]
-follows = str_split_fixed(favs, " - ", n=2)[,1]
-final = str_split_fixed(sampledinfo, "Published: ", n=2)[,2]
-final = str_split_fixed(final, " - ", n=3)
-published = final[,1]
-characters = final[,2]
-characters[grep("Complete", characters)] = NA
-complete = final[,3]
-complete[grep("Complete", characters)]="Complete"
-
-cleaned = data.frame(rating_lang, genre, chapter, words, reviews, favs, follows, published, characters, complete)
-View(cleaned)
-write.csv(cleaned, "Hinny.csv")
-
-#hermioneron
-# Store web url
-i = sample(1:62, 10)
-urls = paste0("https://www.fanfiction.net/book/Harry-Potter/?&srt=1&r=10&c1=3&c2=2&pm=1&p=", i)
-
-info=NULL
-for(j in 1:4){
-  test <- read_html(urls[j])
-  #Scrape the website for the movie rating
-  info[(1:25)+(j-1)*25] = test %>% 
-    html_nodes(".xgray") %>%
-    html_text()
-}
-info
-
-sampledinfo = info[sample(length(info), 100)]
-rating_lang = str_split_fixed(sampledinfo, " - ", n=12)[,c(1,2)]
-genre = str_split_fixed(sampledinfo, " - ", n=12)[,3]
-genre[grep("Chapters", genre)] = NA
-chapter = str_split_fixed(sampledinfo, "Chapters: ", n=2)[,2]
-chapter =  str_split_fixed(chapter, " - ", n=2)[,1]
-words = str_split_fixed(sampledinfo, "Words: ", n=2)[,2]
-words = str_split_fixed(words, " - ", n=2)[,1]
-reviews = str_split_fixed(sampledinfo, "Reviews: ", n=2)[,2]
-reviews = str_split_fixed(reviews, " - ", n=2)[,1]
-favs = str_split_fixed(sampledinfo, "Favs: ", n=2)[,2]
-favs = str_split_fixed(favs, " - ", n=2)[,1]
-follows = str_split_fixed(sampledinfo, "Follows: ", n=2)[,2]
-follows = str_split_fixed(favs, " - ", n=2)[,1]
-final = str_split_fixed(sampledinfo, "Published: ", n=2)[,2]
-final = str_split_fixed(final, " - ", n=3)
-published = final[,1]
-characters = final[,2]
-characters[grep("Complete", characters)] = NA
-complete = final[,3]
-complete[grep("Complete", characters)]="Complete"
-
-cleaned = data.frame(rating_lang, genre, chapter, words, reviews, favs, follows, published, characters, complete)
-View(cleaned)
-write.csv(cleaned, "hermioneron.csv")
-
-
-
-dramione = read.csv("dramione.csv")
-drarry = read.csv("drarry.csv")
-hinny = read.csv("hinny.csv")
-romione = read.csv("hermioneron.csv")
-
-dramione$ship = "dramione"
-dramione$shipnum = 1
-drarry$ship = "drarry"
-drarry$shipnum = 2
-hinny$ship = "hinny"
-hinny$shipnum = 3
-romione$ship = "romione"
-romione$shipnum = 4
-
-all = data.frame(rbind(dramione, drarry, hinny, romione))
-all$favs = as.numeric(all$favs)
-
-write.csv(all, "all.csv")
-
-mod = lm(all$fav ~ all$ship, data=all)
-summary(mod)
-confint(mod)
-
-
+# Any mention of a crawl delay?
+rt$crawl_delay
 
 ```
 
 
+```{r scrape-data}
 
-## Your turn
+# Pick which page you want to scrape - This URL takes stories of all ratings, sorted by favourites as a measure of popularity
+base_url = 
+  "https://www.fanfiction.net/book/Harry-Potter/?&srt=4&r=10&p="
+
+# 1:20 indicates the pages I want
+# There are 25 stories per page, so the first 20 pages gives us the top 500 stories
+map_df(1:20, function(i) {
+
+  pages = read_html(paste0(base_url, i))
+  
+  # The '.' before stitle and xgray indicates that it is the class
+  data.frame(title = html_text(html_nodes(pages, ".stitle")), details=html_text(html_nodes(pages, ".xgray")),
+             stringsAsFactors=FALSE)
+
+}) -> data
+
+# Store how many stories for each graph titles later
+n_stories = dim(data)[1]
+
+```
+
+## Get some helpful information from the filter menu
+This next section pulls some information from the filters menu to help up clean up the data later. See [this xpath tutorial](https://www.w3schools.com/xml/xpath_intro.asp) for more information.
+
+```{r helpful-bits}
+# Major credit to Anna for this code and the chunk below - you would have been disgusted by how hack-y it was before
+
+home = read_html("https://www.fanfiction.net/book/Harry-Potter/")
+
+# Get genres
+genres = home %>% 
+  html_nodes(xpath='//*[@id="myform"]/div[1]/select[3]/option') %>%
+  html_text() 
+genres = genres[-1] #delete first text value
+genresReg = paste(genres, collapse = '|')
+
+# Get the list of characters
+characters <- home %>% 
+  html_nodes(xpath='//*[@id="myform"]/div[1]/select[10]/option') %>%
+  html_text() 
+charactersReg = paste(characters, collapse = '|')
+
+# Get ratings
+ratingLevels <- c("K", "K+", "T", "M")
+
+# Useful for later
+my_counter = function(x){
+ return(length(x) - sum(str_detect(x, "Not")))
+}
+
+```
+
+## Tidy up the data
+```{r tidy-data}
+
+tidy_data = data %>%
+  mutate(id = 1:n()) %>%
+  select(id,title, details) %>% 
+  separate_rows(details,sep="- ") %>%
+  separate(details,c("varName", "tempValue"), sep=":", fill="left") %>%
+  mutate(
+    newValue = str_trim(tempValue),
+    newVarName = case_when(
+      !is.na(varName) ~ varName,
+      str_detect(newValue, "Complete") ~ "Completed",
+      str_detect(newValue, genresReg) ~ "Genres",
+      str_detect(newValue, charactersReg) ~ "Characters",
+      TRUE ~ "Language"
+    )
+  ) %>% 
+  select(id, title, newVarName, newValue) %>%
+  spread(newVarName, newValue, fill = NA) %>%
+  mutate_at(vars(c("Chapters","Favs","Follows","Reviews","Words")), parse_number) %>%
+  mutate_at(vars(c("Published")), mdy) %>%
+  mutate(
+    Rating = factor(Rated, ratingLevels),
+    Completed = case_when(is.na(Completed) ~ "Not complete", 
+                          TRUE ~ "Complete"),
+    Characters = str_replace_all(Characters,c("\\[" = "","\\]" = ""))
+  )
+
+# Make columns for each genre
+
+for (ii in 1:length(genres)){
+    tidy_data = tidy_data %>%
+    mutate_(.dots = setNames(list(paste0("case_when(str_detect(Genres, \"", genres[ii], "\") ~ \"", genres[ii], "\",
+                                        TRUE ~ paste0(\"Not \", \"", genres[ii], "\"),
+                                        NA ~ paste0(\"Not \",\"", genres[ii], "\"))"
+                                        )), paste0("genre_", genres[ii])))
+}
+
+# Make columns for each character
+# This one takes a while because there are a lot of characters that could be included
+
+for (jj in 1:length(characters)){
+    tidy_data = tidy_data %>%
+    mutate_(.dots = setNames(list(paste0("case_when(str_detect(Characters, \"", characters[jj], "\") ~ \"", characters[jj], "\",
+                                        TRUE ~ paste0(\"Not \", \"", characters[jj], "\"),
+                                        NA ~ paste0(\"Not \",\"", characters[jj], "\"))"
+                                        )), paste0("character_", characters[jj])))
+}
+
+
+```
+
+## Fun stuff - let's get plottin'!
+```{r fun-stuff-genres}
+# See how many stories featuring each character there are 
+
+# Set how many stories minimum they must appear in to be included
+appear_lim = 0
+summary_genre = tidy_data %>% 
+  select(starts_with("genre_")) %>% 
+  sapply(my_counter) %>% 
+  data.frame() %>% 
+  rename_(Counts = names(.)[1]) %>% 
+  mutate(Genre = str_split_fixed(rownames(.), "genre_", 2)[,2]) %>% 
+  filter(Counts>=appear_lim) %>% 
+  arrange(desc(Counts)) %>% 
+  ggplot(aes(x = reorder(Genre, -Counts), y = Counts)) +
+  geom_bar(stat = "identity", fill="#611c64") +
+  xlab("Genres") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ggtitle(paste("Genre popularity among stories in the top", n_stories)) +
+  geom_text(stat='identity', aes(label=Counts), vjust=-0.3)
+
+summary_genre
+
+```
+
+
+```{r fun-stuff-characters}
+# See how many stories featuring each character there are 
+
+# Set how many stories minimum they must appear in to be included
+appear_lim = 5
+summary_character = tidy_data %>% 
+  select(starts_with("character_")) %>% 
+  sapply(my_counter) %>% 
+  data.frame() %>% 
+  rename_(Counts = names(.)[1]) %>% 
+  mutate(Character = str_split_fixed(rownames(.), "character_", 2)[,2]) %>% 
+  filter(Counts>=appear_lim) %>% 
+  arrange(desc(Counts)) %>% 
+  ggplot(aes(x = reorder(Character, -Counts), y = Counts)) +
+  geom_bar(stat = "identity", fill="#611c64") +
+  xlab("Characters") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ggtitle(paste("Characters that appear in at least", appear_lim, "stories in the top", n_stories)) +
+  geom_text(stat='identity', aes(label=Counts), vjust=-0.3)
+
+summary_character
+
+
+  
+```
+
+```{r fun-stuff-rating}
+
+rating = tidy_data %>% 
+  ggplot(aes(Rating)) +
+  geom_bar(fill="#611c64") +
+  ylab("Count") +
+  theme_minimal() +
+  ggtitle(paste("Ratings of stories in the top", n_stories)) +
+  geom_text(stat='count', aes(label=..count..), vjust=-0.3)
+  
+rating
+
+```
+
+```{r fun-stuff_rating_romance}
+
+rating_romance = tidy_data %>% 
+  ggplot(aes(Rating, fill=genre_Romance)) +
+  geom_bar() +
+  ylab("Count") +
+  theme_minimal() +
+  ggtitle(paste("Romance stories in each rating group in the top", n_stories)) +
+  scale_fill_discrete(name = "Romance genre")
+  
+rating_romance
+
+```
+
+```{r fun-stuff_rating_males}
+
+male_ratings = data_frame("Harry P." = xtabs(~`character_Harry P.`+Rating, data=tidy_data)[1,],
+      "Draco M." = xtabs(~`character_Draco M.`+Rating, data=tidy_data)[1,],
+      "Severus S." = xtabs(~`character_Severus S.`+Rating, data=tidy_data)[2,],
+      "Sirius B." = xtabs(~`character_Sirius B.`+Rating, data=tidy_data)[2,],
+      "Ron W."= xtabs(~`character_Ron W.`+Rating, data=tidy_data)[2,],
+      "Voldemort" = xtabs(~`character_Voldemort`+Rating, data=tidy_data)[2,]) %>% 
+  gather(Character, Rating_Count) %>% 
+  mutate(Rating = factor(rep(ratingLevels, 6), levels = c("K", "K+", "T", "M")))
+
+ggplot(male_ratings, aes(Character, Rating_Count, fill=Rating)) +
+  geom_bar(stat="identity", position = "fill") +
+  ylab("Proportion") +
+  ggtitle(paste0("Which of these male characters has the greatest proportion of the stories \nthey're featured in (in the top ", n_stories, ") rated Mature?")) +
+  theme_minimal()
+
+```
+```{r fun-stuff-numeric}
+
+scatterplot = tidy_data %>% 
+  filter(Published > 2000) %>% 
+  mutate(Publish_cat = case_when(
+    year(Published) < 2006 ~ "2002 - 2005",
+    year(Published) < 2010 ~ "2006 - 2009",
+    year(Published) < 2014 ~ "2010 - 2013",
+    TRUE ~ "2014 - 2017"
+  )) %>% 
+  ggplot(aes(x = Chapters, y = Favs, color = Completed)) +
+  geom_point() +
+  facet_grid(. ~ Publish_cat) +
+  theme_minimal() +
+  scale_color_discrete(name = "Completed") +
+  ggtitle("Favourites and chapters by publishing date and completion status", subtitle = paste0("Top ", n_stories, " stories by number of favourites"))
+  
+scatterplot
+
+```
+
