@@ -16,7 +16,7 @@ We're going to need a package called `rvest` (rvest, harvest, geddit?) to do our
 # install.packages("dplyr")
 # install.packages("ggplot2")
 # install.packages("lubridate")
-# install.packages("purr")
+# install.packages("purrr")
 # install.packages("readr")
 # install.packages("robotstxt")
 # install.packages("rvest")
